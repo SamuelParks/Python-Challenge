@@ -12,17 +12,14 @@ date = []
 profit = []
 
 #Pulls budget data CSV file from same folder and reads it
-csvpath = os.path.join('csv_data','budget_data.csv')
-
-# print(csvpath)
+csvpath = os.path.join('budget_data.csv')
 
 with open(csvpath, 'r', encoding='utf-8') as csvfile:
      # CSV reader specifies delimiter and variable that holds contents
     csvreader = csv.reader(csvfile, delimiter=',')
 
-    # Read the header row first (skip this step if there is now header)
+    # This reads the header row first and allows it to be skipped
     csv_header = next(csvreader)
-   # print(f"CSV Header: {csv_header}")
 
     #Reads the first row of data separately to avoid messing up the measure of change that is kept track of in the for loop
     ##Removing the first month because the first month does not have a change - we can't assume that the previous month was zero, so we have to remove it. We change only start tracking changes with the first to second month and so on
@@ -38,7 +35,7 @@ with open(csvpath, 'r', encoding='utf-8') as csvfile:
     ## This skips the header in the for loop, but starts as one because we did the first line of data separately
     month_counter=1
 
-    # Read each row of data after the header AND the first line of data - because we are measuring change
+    # This reads each row of data after the header AND the first line of data - because we are measuring change
     for row in csvreader:
                        
          #This saves all the dates and profit/loss in lists
@@ -66,12 +63,25 @@ average_change_tot = (change_per_month_tot)/(month_counter-1)
 
 
 print(f"Total Months: {month_counter}")
-print(f"TotaL:  ${net_Profit_Loss}")
+print(f"Total:  ${net_Profit_Loss}")
 print(f"Average Change: $ {round(average_change_tot,2)}")
-#print(average_change_tot)
-#print(greatest_increase)
-#print(greatest_decrease)
 
 #greatest_decrease_month and greatest_increase_month are subtracted by one because the index starts at zero
 print(f"Greatest Increase in Profits: {date[greatest_increase_month-1]} (${greatest_increase})")
 print(f"Greatest Decrease in Profits: {date[greatest_decrease_month-1]} (${greatest_decrease})")
+
+# Set variable for output file
+output_file = os.path.join("PyBankOutput.csv")
+
+#  Open the output file
+with open(output_file, "w") as datafile:
+    writer = csv.writer(datafile)
+
+    # This writes the same information into the output file as was printed into the terminal above
+    writer.writerow(["Total Months: ", month_counter])
+    writer.writerow(["Total: ",  "$", net_Profit_Loss])
+    writer.writerow(["Average Change: ", "$", round(average_change_tot,2)])
+
+    #greatest_decrease_month and greatest_increase_month are subtracted by one because the index starts at zero
+    writer.writerow(["Greatest Increase in Profits: ", date[greatest_increase_month-1], "$", greatest_increase])
+    writer.writerow(["Greatest Decrease in Profits: ", date[greatest_decrease_month-1], "$", greatest_decrease])
